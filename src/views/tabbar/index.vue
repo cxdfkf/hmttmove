@@ -1,8 +1,9 @@
 <template>
   <div>
-    <van-nav-bar title="标题" />
+    <van-nav-bar title="标题" fixed />
     <!-- 子路由出口 -->
     <router-view />
+    <!-- 底部栏 -->
     <van-tabbar>
       <van-tabbar-item icon="home-o">首页</van-tabbar-item>
       <van-tabbar-item icon="search">问答</van-tabbar-item>
@@ -18,5 +19,5 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="less">
 </style>

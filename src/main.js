@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-
+import '@/api/date'
 import {
   Button,
   NavBar,
@@ -10,7 +10,18 @@ import {
   Toast,
   CellGroup,
   Tabbar,
-  TabbarItem
+  TabbarItem,
+  Tab,
+  Tabs,
+  PullRefresh,
+  List,
+  Cell,
+  Grid,
+  GridItem,
+  Image,
+  Icon,
+  Lazyload,
+  Popup
 } from 'vant'
 import './styles/index.less'
 
@@ -26,6 +37,17 @@ Vue.use(Button)
   .use(CellGroup)
   .use(Tabbar)
   .use(TabbarItem)
+  .use(Tab)
+  .use(Tabs)
+  .use(PullRefresh)
+  .use(List)
+  .use(Cell)
+  .use(Grid)
+  .use(GridItem)
+  .use(Image)
+  .use(Icon)
+  .use(Lazyload)
+  .use(Popup)
 Vue.config.productionTip = false
 
 // 配置使用中文语言

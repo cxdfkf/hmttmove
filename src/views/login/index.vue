@@ -45,6 +45,7 @@ export default {
       })
       try {
         const { data } = await userYz(this.user)
+
         const isValid = await this.$refs.userForm.validate()// 表单验证登录信息
         if (!isValid) {
           return
