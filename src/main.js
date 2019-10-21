@@ -21,7 +21,9 @@ import {
   Image,
   Icon,
   Lazyload,
-  Popup
+  Popup,
+  Search,
+  Loading
 } from 'vant'
 import './styles/index.less'
 
@@ -48,6 +50,8 @@ Vue.use(Button)
   .use(Icon)
   .use(Lazyload)
   .use(Popup)
+  .use(Search)
+  .use(Loading)
 Vue.config.productionTip = false
 
 // 配置使用中文语言

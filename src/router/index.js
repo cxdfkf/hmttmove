@@ -11,6 +11,21 @@ export default new Router({
       component: () => import('@/views/login')
     },
     {
+      name: 'search',
+      path: '/search',
+      component: () => import('@/views/search')
+    },
+    {
+      name: 'searchRes',
+      path: '/search/:q',
+      component: () => import('@/views/result')
+    },
+    {
+      name: 'article',
+      path: '/article/:articleId',
+      component: () => import('@/views/articles')
+    },
+    {
       name: 'tabbar',
       path: '/index',
       component: () => import('@/views/tabbar'),

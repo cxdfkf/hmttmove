@@ -1,0 +1,168 @@
+<template>
+  <div class="article-container">
+    <!-- 导航栏 -->
+    <van-nav-bar
+      fixed
+      left-arrow
+      @click-left="$router.back()"
+      title="文章详情"
+    ></van-nav-bar>
+    <!-- /导航栏 -->
+
+    <!-- 加载中 loading -->
+    <van-loading
+      class="article-loading"
+      v-if="loading"
+    />
+    <!-- 当加载中时，显示 -->
+    <!-- /加载中 loading -->
+
+    <!-- 文章详情 -->
+    <div
+      class="detail"
+      v-else-if="article.title"
+    >
+      <h3 class="title">{{article.title}}</h3>
+      <div class="author">
+        <van-image
+          round
+          width="2rem"
+          height="2rem"
+          fit="fill"
+          :src="article.aut_photo"
+        />
+        <div class="text">
+          <p class="name">{{article.aut_name}}</p>
+          <p class="time">{{article.pubdate|relativeTime}}</p>
+        </div>
+        <!-- 关注按钮 -->
+        <van-button
+          round
+          size="small"
+          type="info"
+        >+ 关注</van-button>
+      </div>
+      <div
+        class="content"
+        v-html="article.content"
+      ></div>
+      <div class="zan">
+        <van-button
+          round
+          size="small"
+          hairline
+          type="primary"
+          plain
+        >点赞</van-button>
+        <!-- icon="good-job-o" -->
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <van-button
+          round
+          size="small"
+          hairline
+          type="danger"
+          plain
+          icon="delete"
+        >不喜欢</van-button>
+      </div>
+    </div>
+    <!-- /文章详情 -->
+
+    <!-- 加载失败的消息提示 -->
+    <div
+      class="error"
+      v-else
+    >
+      <p>网络超时，点击 <a
+          href="#"
+          @click.prevent="getArticlesDetail"
+        >刷新</a> 试一试。</p>
+    </div>
+    <!-- /加载失败的消息提示 -->
+  </div>
+</template>
+
+<script >
+import { getArticlesDetail } from '@/api/article'
+export default {
+  name: 'ArticleIndex',
+  data () {
+    return {
+      article: {},
+      loading: false
+    }
+  },
+  methods: {
+
+    async  getArticlesDetail () {
+      this.loading = true
+      try {
+        let { data } = await getArticlesDetail(this.$route.params.articleId)
+        this.article = data.data
+      } catch (error) {
+        console.log(error)
+      }
+      // 无论加载成功或失败，loading都要结束
+      this.loading = false
+    }
+  },
+  created () {
+    this.getArticlesDetail()
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.article-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow-y: scroll;
+  width: 100%;
+  height: 100%;
+}
+.article-loading {
+  padding-top: 100px;
+  text-align: center;
+}
+.error {
+  padding-top: 100px;
+  text-align: center;
+}
+.detail {
+  padding: 50px 10px;
+  .title {
+    font-size: 16px;
+  }
+  .zan {
+    text-align: center;
+  }
+  .author {
+    padding: 10px 0;
+    display: flex;
+    .text {
+      flex: 1;
+      padding-left: 10px;
+      line-height: 1.3;
+      .name {
+        font-size: 14px;
+        margin: 0;
+      }
+      .time {
+        margin: 0;
+        font-size: 12px;
+        color: #999;
+      }
+    }
+  }
+  .content {
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-break: break-all;
+    /deep/ img {
+      max-width: 100%;
+      background: #f9f9f9;
+    }
+  }
+}
+</style>

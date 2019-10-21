@@ -1,52 +1,118 @@
 <template>
   <div class="home">
-    <van-tabs v-model="active" animated swipeable>
+    <!-- 弹层 -->
+    <van-popup
+      v-model="isShow"
+      round
+      position="bottom"
+      :style="{ height: '90%' }"
+      closeable
+    >
+      <!-- 我的频道 -->
+      <p class="my">
+        <span style="margin-left:20px;font-size:18px">我的频道</span>
+        <van-button
+          type="danger"
+          size="mini"
+          style="float:right;right:20px"
+          @click="isclose=!isclose"
+        >{{isclose?"完成":"编辑"}}</van-button>
+      </p>
+      <!-- 宫格组件 -->
+      <van-grid>
+        <van-grid-item
+          :text="channels[0].name"
+          @click="tuijiandel(0)"
+        ></van-grid-item>
+        <van-grid-item
+          :text="channel.name"
+          v-for="(channel,index) in channels.slice(1)"
+          :key="channel.id"
+          @click="qhanddel(index)"
+        >
+          <div
+            slot="icon"
+            class="righticon"
+            v-show="isclose"
+          >
+            <van-icon name="close" />
+          </div>
+        </van-grid-item>
+
+      </van-grid>
+      <p class="my">
+        <span style="margin-left:20px;font-size:18px">推荐频道</span>
+      </p>
+      <van-grid>
+        <!-- 推荐频道 -->
+        <van-grid-item
+          :text="channel.name"
+          v-for="channel in resChannels"
+          :key="channel.id"
+          @click="addchannel(channel)"
+        >
+        </van-grid-item>
+      </van-grid>
+    </van-popup>
+    <van-tabs
+      v-model="active"
+      animated
+      swipeable
+    >
       <!-- 右侧的面包按钮 -->
-      <div slot="nav-right" class="wap-nav" @click="isShow=!isShow">
-        <van-icon name="wap-nav" class="wap-nav" size="24" />
+      <div
+        slot="nav-right"
+        class="wap-nav"
+        @click="isShow=!isShow"
+      >
+        <van-icon
+          name="wap-nav"
+          class="wap-nav"
+          size="24"
+        />
       </div>
-      <!-- 弹层 -->
-      <van-popup v-model="isShow" round position="bottom" :style="{ height: '90%' }" closeable>
-        <!-- 我的频道 -->
-        <p class="my">
-          <span style="margin-left:20px;font-size:18px">我的频道</span>
-          <van-button type="danger" size="mini" style="float:right;right:20px"
-            @click="isclose=!isclose">{{isclose?"完成":"编辑"}}</van-button>
-        </p>
-        <!-- 宫格组件 -->
-        <van-grid>
-          <van-grid-item :text="channel.name" v-for="(channel,index) in channels" :key="channel.id"
-            @click="qhanddel(index)">
-            <div slot="icon" class="righticon" v-show="isclose">
-              <van-icon name="close" />
-            </div>
-          </van-grid-item>
 
-        </van-grid>
-        <p class="my">
-          <span style="margin-left:20px;font-size:18px">推荐频道</span>
-        </p>
-        <van-grid>
-          <!-- 推荐频道 -->
-          <van-grid-item :text="channel.name" v-for="channel in resChannels" :key="channel.id"
-            @click="addchannel(channel)">
-          </van-grid-item>
-        </van-grid>
-      </van-popup>
-      <van-tab :title="channel.name" v-for="channel in channels" :key="channel.id">
+      <van-tab
+        :title="channel.name"
+        v-for="channel in channels"
+        :key="channel.id"
+      >
 
-        <van-pull-refresh v-model="channel.isLoading" @refresh="onRefresh">
+        <van-pull-refresh
+          v-model="channel.isLoading"
+          @refresh="onRefresh"
+        >
           <!-- 下拉加载更多 -->
-          <van-list v-model="channel.loading" :finished="channel.finished" finished-text="没有更多了"
-            @load="onLoad">
+          <van-list
+            v-model="channel.loading"
+            :finished="channel.finished"
+            finished-text="没有更多了"
+            @load="onLoad"
+          >
             <!-- item.art_id的类型是大数字类型，key的值只能是数字和字符串，因此要转化  item.art_id.toString() -->
-            <van-cell v-for="item in channel.article" :key="item.art_id.toString()"
-              :title="item.title">
+            <van-cell
+              v-for="item in channel.article"
+              :key="item.art_id.toString()"
+              :title="item.title"
+              @click="$router.push('/article/'+item.art_id)"
+            >
+              <!-- 字符串外双里单 -->
+              <!-- @click="$router.push({name:'article',params:{articleId:item.art_id.toString()}})" -->
               <div slot="label">
-                <van-grid :border="false" :column-num="3">
-                  <van-grid-item v-for="(img, index) in item.cover.images" :key="index">
+                <van-grid
+                  :border="false"
+                  :column-num="3"
+                >
+                  <van-grid-item
+                    v-for="(img, index) in item.cover.images"
+                    :key="index"
+                  >
 
-                    <van-image height="80" :src="img" lazy-load />
+                    <van-image
+                      height="80"
+                      :src="img"
+                      lazy-load
+                    />
                   </van-grid-item>
                 </van-grid>
                 <div class="article-info">
@@ -74,25 +140,32 @@
 import { getChannel, getAllchannel } from '@/api/channel'
 import { getArticles } from '@/api/article'
 import { setItem, getItem } from '@/utils/storage'
+// import { getAdvice } from '@api/search'
 export default {
   name: 'HomeIndex',
   data () {
     return {
       active: 0,
       channels: [],
-      isShow: false,
+      isShow: false, // 弹层是否显示
       allChannels: [],
-      isclose: false
+      isclose: false// 编辑状态下的关闭按钮是否显示
     }
   },
   methods: {
+    // 对于弹层里面的推荐的点击处理方法
+    tuijiandel (index) {
+      this.active = index
+      this.isShow = false
+    },
     // 点击切换频道或删除频道
     qhanddel (index) {
       if (this.isclose) {
         this.channels.splice(index, 1)
       } else {
-        this.active = index// 切换到对应的频道
-        this.isShow = false// 关闭弹层
+        this.tuijiandel(index + 1)
+        // this.active = index// 切换到对应的频道
+        // this.isShow = false// 关闭弹层
       }
     },
     // 从推荐频道中向我的频道进行添加
@@ -153,6 +226,7 @@ export default {
       //   }
       // }, 500)
     },
+    // 获取我的频道
     async getChannel () {
       let arrchannels = []
       let localChannel = getItem('channel')
@@ -165,20 +239,40 @@ export default {
       // 获取用户选取的所有的频道列表，将其渲染页面
       // let { data } = await getChannel()
       // 为每个频道列表加一个属性article
-      arrchannels.forEach((item) => {
+      this.fzchannels(arrchannels)
+      // arrchannels.forEach((item) => {
+      //   item.article = []// 为了之后点击哪个频道，就加载哪个频道下的文章列表，forEach改变原数组
+      //   item.loading = false
+      //   item.finished = false
+      //   item.timestamp = null// 给当前频道增加时间戳属性
+      //   item.isLoading = false
+      // })
+      this.channels = arrchannels
+    },
+    // 获取所有的频道
+    async  getAllchannels () {
+      let { data } = await getAllchannel()
+      const allChannels = data.data.channels
+      this.fzchannels(allChannels)
+      // allChannels.forEach((item) => {
+      //   item.article = []// 为了之后点击哪个频道，就加载哪个频道下的文章列表，forEach改变原数组
+      //   item.loading = false
+      //   item.finished = false
+      //   item.timestamp = null// 给当前频道增加时间戳属性
+      //   item.isLoading = false
+      // })
+      // debugger
+      this.allChannels = allChannels
+    },
+    // 封装给我的频道和全部频道增加属性
+    fzchannels (arr) {
+      arr.forEach((item) => {
         item.article = []// 为了之后点击哪个频道，就加载哪个频道下的文章列表，forEach改变原数组
         item.loading = false
         item.finished = false
         item.timestamp = null// 给当前频道增加时间戳属性
         item.isLoading = false
       })
-      this.channels = arrchannels
-    },
-    // 获取所有的频道
-    async  getAllchannels () {
-      let { data } = await getAllchannel()
-      this.allChannels = data.data.channels
-      // debugger
     }
 
   },

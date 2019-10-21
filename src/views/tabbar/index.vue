@@ -1,6 +1,14 @@
 <template>
   <div>
-    <van-nav-bar title="标题" fixed />
+    <van-nav-bar fixed>
+      <van-button
+        round
+        type="info"
+        slot="title"
+        class="btn"
+        @click="$router.push('/search')"
+      >搜索</van-button>
+    </van-nav-bar>
     <!-- 子路由出口 -->
     <router-view />
     <!-- 底部栏 -->
@@ -20,4 +28,8 @@ export default {
 </script>
 
 <style scoped lang="less">
+.btn {
+  width: 100%;
+  background: #5babfb;
+}
 </style>
