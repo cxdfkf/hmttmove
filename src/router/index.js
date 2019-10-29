@@ -7,7 +7,7 @@ export default new Router({
   routes: [
     {
       name: 'login',
-      path: '/',
+      path: '/login',
       component: () => import('@/views/login')
     },
     {
@@ -26,14 +26,27 @@ export default new Router({
       component: () => import('@/views/articles')
     },
     {
+      path: '/my',
+      component: () => import('@/views/my')
+    },
+    {
+      path: '/chat',
+      component: () => import('@/views/chat')
+    },
+    {
+      path: '/user',
+      component: () => import('@/views/user')
+    },
+    {
       name: 'tabbar',
-      path: '/index',
+      path: '/',
       component: () => import('@/views/tabbar'),
       children: [
         {
           path: '',
           component: () => import('@/views/home')
         }
+
       ]
     }
   ]

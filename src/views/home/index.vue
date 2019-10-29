@@ -203,7 +203,8 @@ export default {
       // 将结果赋给当前频道的文章
       currentChannel.article.push(...data.data.results)
       // console.log(currentChannel.article)
-
+      // 加载状态结束
+      currentChannel.loading = false
       // currentChannel.article = currentChannel.article.concat(data.data.results)
       // currentChannel.article = data.data.results
       // 将时间戳赋值给当前频道的时间戳

@@ -20,6 +20,7 @@
       <van-cell
         v-for="(item,index) in adviceArr"
         :key="index"
+        @click="onSearch(item)"
       >
         <div
           slot="title"
@@ -89,6 +90,9 @@ export default {
   methods: {
 
     async  onSearch (str) {
+      if (!str.length) {
+        return
+      }
       // 看记录是否在历史记录数组中存在,若存在返回索引，不存在返回-1
       const index = this.searchHistories.indexOf(str)
       if (!index === -1) {

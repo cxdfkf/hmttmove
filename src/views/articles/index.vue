@@ -40,7 +40,8 @@
           round
           size="small"
           type="info"
-        >+ 关注</van-button>
+          @click="isfocusUser"
+        >{{article.is_followed ? "取消关注" : "+关注"}}</van-button>
       </div>
       <div
         class="content"
@@ -51,9 +52,11 @@
           round
           size="small"
           hairline
-          type="primary"
+          :type="article.attitude===1?'default':'primary'"
           plain
-        >点赞</van-button>
+          :icon="article.attitude===1?'good-job':'good-job-o'"
+          @click="dianzan"
+        >{{article.attitude===1 ? "取消点赞" : "点赞"}}</van-button>
         <!-- icon="good-job-o" -->
         &nbsp;&nbsp;&nbsp;&nbsp;
         <van-button
@@ -63,7 +66,8 @@
           type="danger"
           plain
           icon="delete"
-        >不喜欢</van-button>
+          @click="onlike"
+        >{{article.attitude===0?"取消不喜欢":"不喜欢"}}</van-button>
       </div>
     </div>
     <!-- /文章详情 -->
@@ -79,11 +83,14 @@
         >刷新</a> 试一试。</p>
     </div>
     <!-- /加载失败的消息提示 -->
+    <article-comment :articleId="$route.params.articleId" />
   </div>
 </template>
 
 <script >
-import { getArticlesDetail } from '@/api/article'
+import { getArticlesDetail, dianzan, cancleDianzan, dislikeArticle, likeArticle } from '@/api/article'
+import { focusUser, cancleUser } from '@/api/user'
+import ArticleComment from '@/components/article-comment'
 export default {
   name: 'ArticleIndex',
   data () {
@@ -92,12 +99,50 @@ export default {
       loading: false
     }
   },
+  components: {
+    'article-comment': ArticleComment
+  },
   methods: {
-
+    // 对文章喜欢的处理
+    async  onlike () {
+      const articleId = this.$route.params.articleId
+      if (this.article.attitude === 0) {
+        await likeArticle(articleId)
+        this.article.attitude = -1
+      } else {
+        await dislikeArticle(articleId)
+        this.article.attitude = 0
+      }
+    },
+    // 对点赞的处理
+    async  dianzan () {
+      const articleId = this.$route.params.articleId
+      if (this.article.attitude === 1) {
+        await cancleDianzan(articleId)
+        this.article.attitude = -1
+      } else {
+        await dianzan(articleId)
+        this.article.attitude = 1
+      }
+    },
+    // 对应关注的处理
+    async  isfocusUser () {
+      // 将其结果发送给接口
+      if (this.article.is_followed) {
+        await cancleUser(this.article.aut_id)
+      } else {
+        await focusUser(this.article.aut_id)
+      }
+      // 值的变化
+      this.article.is_followed = !this.article.is_followed
+    },
+    // 获取文章详情
     async  getArticlesDetail () {
       this.loading = true
       try {
         let { data } = await getArticlesDetail(this.$route.params.articleId)
+        // console.log(data)
+
         this.article = data.data
       } catch (error) {
         console.log(error)
@@ -113,6 +158,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .van-icon-arrow-left {
+  color: #fff;
+}
 .article-container {
   position: absolute;
   left: 0;

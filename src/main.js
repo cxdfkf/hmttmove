@@ -23,7 +23,10 @@ import {
   Lazyload,
   Popup,
   Search,
-  Loading
+  Loading,
+  Dialog,
+  ActionSheet,
+  DatetimePicker
 } from 'vant'
 import './styles/index.less'
 
@@ -52,6 +55,9 @@ Vue.use(Button)
   .use(Popup)
   .use(Search)
   .use(Loading)
+  .use(Dialog)
+  .use(ActionSheet)
+  .use(DatetimePicker)
 Vue.config.productionTip = false
 
 // 配置使用中文语言

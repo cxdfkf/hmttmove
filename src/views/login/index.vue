@@ -3,19 +3,43 @@
     <van-nav-bar title="标题" />
     <ValidationObserver ref="userForm">
       <van-cell-group>
-        <ValidationProvider name="手机号" rules="required|phone" v-slot="{ errors }">
+        <ValidationProvider
+          name="手机号"
+          rules="required|phone"
+          v-slot="{ errors }"
+        >
           <!-- <p>{{errors[0]}}</p> -->
-          <van-field required clearable label="手机号" v-model="user.mobile" placeholder="请输入手机号"
-            :error-message="errors[0]" />
+          <van-field
+            required
+            clearable
+            label="手机号"
+            v-model="user.mobile"
+            placeholder="请输入手机号"
+            :error-message="errors[0]"
+          />
         </ValidationProvider>
-        <ValidationProvider name="验证码" rules="required|max:6" v-slot="{ errors }">
-          <van-field type="password" label="验证码" v-model="user.code" placeholder="请输入验证码"
-            :error-message="errors[0]" required />
+        <ValidationProvider
+          name="验证码"
+          rules="required|max:6"
+          v-slot="{ errors }"
+        >
+          <van-field
+            type="password"
+            label="验证码"
+            v-model="user.code"
+            placeholder="请输入验证码"
+            :error-message="errors[0]"
+            required
+          />
         </ValidationProvider>
       </van-cell-group>
     </ValidationObserver>
     <div class="btn-wrap">
-      <van-button type="info" class="btn" @click="loginYz">登录</van-button>
+      <van-button
+        type="info"
+        class="btn"
+        @click="loginYz"
+      >登录</van-button>
     </div>
 
   </div>
@@ -55,6 +79,7 @@ export default {
         this.$toast.success('登录成功')
         this.$store.commit('tokenModify', data.data)// 将token放入到vuex容器中
         setItem('user', data.data)// 将token存储到本地
+        this.$router.push('/')
       } catch (error) {
         // console.log(error)
         // loading关闭
